@@ -8,67 +8,31 @@
 
 #define PI 3.14159265358979323846
 
-void test(int order, float cutoff) {
+std::vector<std::vector<float>> butterworth_lowpass(int order, float cutoff) {
     //std::complex<float> pole(1, 2);
-
-    float T = 1.0f;// / samplerate;
-    //float warped = 2 * samplerate * tan(PI * cutoff / samplerate);
-    float warped = 2 * tan(PI * cutoff / 2);
-
+    const float warped = 2 * tan(PI * cutoff / 2);
     std::vector<std::complex<float>> poles;
-
-    std::cout << "analog poles\n";
     // compute butterworth poles
     for (int k = 0; k < order; k++) {
         float theta = PI / 2.0 * (1 + (2.0 * k + 1.0) / order);
         std::complex<float> pole = warped * std::polar(1.0f, theta);
-
         poles.push_back(pole);
-        std::cout << pole << std::endl;
     }
-    std::cout << "bilinear transformed" << std::endl;
     std::vector<std::complex<float>> digital_poles;
-    // do bilinear transform (s --> z)
+    // bilinear transform
     for (auto & pole : poles) {
-        std::complex<float> digital_pole = (1.0f + pole * T / 2.0f) / (1.0f - pole * T / 2.0f);
+        std::complex<float> digital_pole = (1.0f + pole / 2.0f) / (1.0f - pole / 2.0f);
         digital_poles.push_back(digital_pole);
-
-        std::cout << digital_pole << std::endl;
     }
-
-    
-    //std::vector<std::complex<float>> poles2 = { 
-    //    std::complex<float>(1.0f, 0.0f) ,
-    //    std::complex<float>(0.2f, 0.4f) ,
-    //    std::complex<float>(0.2f, -0.4f) ,
-
-
-    //}; // initialize to 1
-    std::cout << "polynomial expansion\n";
     // polynomial expansion
     std::vector<std::complex<float>> a = { std::complex<float>(1.0f, 0.0f) }; // initialize to 1
-
     for (auto& pole : digital_poles) {
         std::cout << std::endl;
-
-        // multiply by (s - pole)
-        // array indices are s powers
-        // 1 --> 10000
-        // s --> 01000
-        //2s^3 ->00020
-
-        // take copy of array
         auto a_copy = a;
-
-        // expand a by 1 
         a_copy.push_back(std::complex<float>(0.0f, 0.0f));
-        
-        // s part: shift contents to right by 1 
         a.insert(a.begin(), std::complex<float>(0.0f, 0.0f));
-        // multiply all elements of copy by -pole
         for (auto& element : a)
             element *= -pole;
-        // add shifted and multiplied together
         for (size_t i = 0; i < a.size(); i++) {
             a[i] += a_copy[i];
         }
@@ -85,7 +49,6 @@ void test(int order, float cutoff) {
         coeff = (coeff * (order - k + 1)) / k;
         b_real.push_back(coeff);
     }
-
     // scale the numbers
     float numerator_unnorm_sum = 0;
     float denom_sum = 0;
@@ -93,28 +56,31 @@ void test(int order, float cutoff) {
         numerator_unnorm_sum += b_real[i];
         denom_sum += a_real[i];
     }
-
     for (auto& element : b_real) {
         element *= denom_sum / numerator_unnorm_sum;
     }
     
-
-
-    std::cout << std::endl << std::endl;
-    for (auto& element : a_real) {
-        std::cout << element << ", ";
-    }
-    std::cout << std::endl << std::endl;
-    for (auto& element : b_real) {
-        std::cout << element << ", ";
-    }
+    return { b_real, a_real };
 }
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    std::cout << "Butter Worth!\n";
 
-    test(2, 0.5);
+    auto returnval = butterworth_lowpass(5, 0.5);
+    auto b = returnval[0];
+    auto a = returnval[1];
+
+    std::cout << std::endl << std::endl;
+    for (auto& element : a) {
+        std::cout << element << ", ";
+    }
+    std::cout << std::endl;
+    for (auto& element : b) {
+        std::cout << element << ", ";
+    }
+
+    std::cout << std::endl;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
