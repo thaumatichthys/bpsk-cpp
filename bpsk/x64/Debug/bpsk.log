@@ -1,0 +1,9 @@
+﻿  bpsk.cpp
+C:\Users\thaumatichthys\source\repos\bpsk\bpsk\bpsk.cpp(16,18): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\thaumatichthys\source\repos\bpsk\bpsk\bpsk.cpp(23,21): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\thaumatichthys\source\repos\bpsk\bpsk\bpsk.cpp(97,26): warning C4244: 'argument': conversion from 'int' to '_Ty', possible loss of data
+C:\Users\thaumatichthys\source\repos\bpsk\bpsk\bpsk.cpp(97,26): warning C4244:         with
+C:\Users\thaumatichthys\source\repos\bpsk\bpsk\bpsk.cpp(97,26): warning C4244:         [
+C:\Users\thaumatichthys\source\repos\bpsk\bpsk\bpsk.cpp(97,26): warning C4244:             _Ty=float
+C:\Users\thaumatichthys\source\repos\bpsk\bpsk\bpsk.cpp(97,26): warning C4244:         ]
+  bpsk.vcxproj -> C:\Users\thaumatichthys\source\repos\bpsk\x64\Debug\bpsk.exe
