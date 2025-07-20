@@ -21,9 +21,18 @@
     <ClCompile Include="IIRFilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PLL.hpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PLL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="IIRFilter.h">
+    <ClInclude Include="IIRFilter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="constants.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -129,9 +129,12 @@
   <ItemGroup>
     <ClCompile Include="bpsk.cpp" />
     <ClCompile Include="IIRFilter.cpp" />
+    <ClCompile Include="PLL.cpp" />
+    <ClCompile Include="PLL.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="IIRFilter.h" />
+    <ClInclude Include="constants.hpp" />
+    <ClInclude Include="IIRFilter.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

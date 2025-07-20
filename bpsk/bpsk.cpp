@@ -6,11 +6,13 @@
 #include <complex>
 #include <vector>
 
-#define PI 3.14159265358979323846
+#include "IIRFilter.hpp"
 
+#define PI 3.14159265358979323846
+/*
 std::vector<std::vector<float>> butterworth_lowpass(int order, float cutoff) {
     //std::complex<float> pole(1, 2);
-    const float warped = 2 * tan(PI * cutoff / 2);
+    const float warped = 2.0f * tan(PI * cutoff / 2);
     std::vector<std::complex<float>> poles;
     // compute butterworth poles
     for (int k = 0; k < order; k++) {
@@ -162,10 +164,10 @@ std::vector<std::vector<float>> butterworth_bandpass(int order, float low_frac, 
 
     return { b_real, a_real };
 }
-
+*/
 int main()
 {
-    std::cout << "Butter Worth!\n";
+    /*std::cout << "Butter Worth!\n";
 
     auto returnval = butterworth_bandpass(2, 0.3, 0.5);
     auto b = returnval[0];
@@ -180,7 +182,10 @@ int main()
         std::cout << element << ", ";
     }
 
-    std::cout << std::endl;
+    std::cout << std::endl;*/
+
+    IIRFilter filter(FilterMode::LowPass, 2, 1, 1);
+
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
