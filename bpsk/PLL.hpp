@@ -22,8 +22,8 @@ public:
 	bool Update();
 	bool GetOutput();
 	float GetFreq();
-	float GetSineValue();
-	float GetCosValue();
+	float Get2xSineValue();
+	float Get2xCosValue();
 private:
 	void UpdateFreq_();
 	bool output_ = false;
@@ -45,23 +45,45 @@ private:
 	float sample_rate_;
 };
 
+class FreqDivider {
+public:
+	FreqDivider(int denom);
+	void SetDenom(int denom);
+	bool PushValue(bool val);
+private:
+	int counter_ovf_ = 1;
+	int counter_ = 0;
+	bool prev_state = false;
+	bool output_state_ = false;
+};
+
 /*
-* REF--->|-----|    |-----------|    |-----|   |----|      |---------|
-*        | PFD |--->|Loop Filter|--->| NCO |---| x2 |----->| Out Div |
-*     -->|-----|    |-----------|    |-----|   |----|  |   |---------|
-*    |                                                 |
-*    |              |--------|                         |
-*     --------------| FB Div |<------------------------
-*                   |--------|
+* PLL Block Diagram
+* 
+*       REF DIV                               
+*       |----|                                            
+* REF---| /N |-->|-----|    |-----------|    |-----|      |--------| 
+*       |----|   | PFD |--->|Loop Filter|--->| NCO |--+-->| Output |
+*             -->|-----|    |-----------|    |-----|  |   |--------| 
+*            |                                        |
+*            |                         |----|         |
+*             -------------------------| /N |<--------
+*                                      |----|
+*                                      FB DIV
 */
 class PLL {
 public:
 	PLL(float sample_rate, float initial_freq, float max_deviation);
 	bool Update(bool ref_in);
 	float GetNCOFreq();
+	void SetRefDivider(int denom);
+	void SetFBDivider(int denom);
+	void SetLoopFilterFreq(float initial_freq);
 	NCO nco_;
 	PFD pfd_;
 	LoopFilter loop_filter_;
+	FreqDivider fb_divider_;
+	FreqDivider ref_divider_;
 private:
 	float sample_rate_;
 	float initial_freq_;

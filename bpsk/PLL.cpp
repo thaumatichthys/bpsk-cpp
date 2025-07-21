@@ -61,12 +61,12 @@ float NCO::GetFreq() {
 	return frequency_;
 }
 
-float NCO::GetSineValue() {
+float NCO::Get2xSineValue() {
 	float phase = 2.0f * constants::pi * ((float)phase_accum_ / constants::uint32_t_max);
 	return sinf(phase);
 }
 
-float NCO::GetCosValue() {
+float NCO::Get2xCosValue() {
 	float phase = 2.0f * constants::pi * ((float)phase_accum_ / constants::uint32_t_max);
 	return cosf(phase);
 }
@@ -101,7 +101,30 @@ void LoopFilter::SetKParams(float Kp, float Ki) {
 	Kp_ = Kp;
 }
 
-PLL::PLL(float sample_rate, float initial_freq, float max_deviation) : nco_(sample_rate), loop_filter_(sample_rate, max_deviation) {
+FreqDivider::FreqDivider(int denom) {
+	SetDenom(denom);
+}
+
+void FreqDivider::SetDenom(int denom) {
+	counter_ = 0;
+	counter_ovf_ = denom;
+}
+
+bool FreqDivider::PushValue(bool val) {
+	if (counter_ovf_ == 0)
+		return val;
+	if (!prev_state && val) {
+		counter_++;
+	}
+	if (counter_ >= counter_ovf_) {
+		output_state_ = !output_state_;
+		counter_ = 0;
+	}
+	prev_state = val;
+	return output_state_;
+}
+
+PLL::PLL(float sample_rate, float initial_freq, float max_deviation) : nco_(sample_rate), loop_filter_(sample_rate, max_deviation), fb_divider_(1), ref_divider_(1) {
 	sample_rate_ = sample_rate;
 	initial_freq_ = initial_freq;
 
@@ -109,8 +132,10 @@ PLL::PLL(float sample_rate, float initial_freq, float max_deviation) : nco_(samp
 }
 
 bool PLL::Update(bool ref_in) {
+	bool ref_divided = ref_divider_.PushValue(ref_in);
 	bool nco_val = nco_.GetOutput();
-	float pfd_val = (float) pfd_.Update(ref_in, nco_val) / sample_rate_;
+	bool nco_val_divided = fb_divider_.PushValue(nco_val);
+	float pfd_val = (float) pfd_.Update(ref_divided, nco_val_divided) / sample_rate_;
 	float control_signal = loop_filter_.PushValue(pfd_val);
 
 	nco_.SetFreq(control_signal + initial_freq_);
@@ -122,5 +147,17 @@ bool PLL::Update(bool ref_in) {
 
 float PLL::GetNCOFreq() {
 	return nco_.GetFreq();
+}
+
+void PLL::SetRefDivider(int denom) {
+	ref_divider_.SetDenom(denom);
+}
+
+void PLL::SetFBDivider(int denom) {
+	fb_divider_.SetDenom(denom);
+}
+
+void PLL::SetLoopFilterFreq(float initial_freq) {
+	initial_freq_ = initial_freq;
 }
 

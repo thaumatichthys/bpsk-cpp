@@ -31,15 +31,17 @@ int main()
 {
 	float sample_rate = 48000;
 	float initial_freq = 1000;
-	float max_dev = 100;
+	float max_dev = 10000;
 	PLL pll(sample_rate, initial_freq, max_dev);
+	pll.SetRefDivider(1);
+	pll.SetFBDivider(1);
 
 	float actual_freq = 1090;
 
 	NCO ref(sample_rate);
 	ref.ChangeFreq(actual_freq);
 
-	int num_cycles = sample_rate * 30;
+	int num_cycles = sample_rate * 10;
 
 	std::vector<float> pll_freqs;
 
