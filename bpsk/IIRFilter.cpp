@@ -3,6 +3,7 @@
 #include <complex>
 #include <vector>
 #include "constants.hpp"
+#include <iostream>
 
 IIRFilter::IIRFilter(FilterMode mode, int order, float sample_rate, float freq) {
 	std::vector<std::vector<float>> coefficients;
@@ -75,7 +76,7 @@ float IIRFilter::PushValue(float new_val) {
 	y_[0] = sum;
 
 	// shift values down
-	for (size_t i = n_coeffs_; i > 0; i--) {
+	for (size_t i = n_coeffs_ - 1; i > 0; i--) {
 		y_[i] = y_[i - 1];
 		x_[i] = x_[i - 1];
 	}

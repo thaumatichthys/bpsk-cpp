@@ -1,7 +1,9 @@
-﻿  PLL.cpp
-C:\Users\thaumatichthys\source\repos\bpsk\bpsk\PLL.cpp(73,38): error C2248: 'LoopFilter::PushValue': cannot access private member declared in class 'LoopFilter'
-      C:\Users\thaumatichthys\source\repos\bpsk\bpsk\PLL.cpp(58,19):
-      see declaration of 'LoopFilter::PushValue'
-      C:\Users\thaumatichthys\source\repos\bpsk\bpsk\PLL.hpp(32,7):
-      see declaration of 'LoopFilter'
-  
+﻿  bpsk.cpp
+C:\Users\thaumatichthys\source\repos\bpsk\bpsk\bpsk.cpp(42,17): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+  IIRFilter.cpp
+  PLL.cpp
+  PLL.hpp
+  SquaringLoop.cpp
+  Generating Code...
+x64\Debug\PLL.obj : warning LNK4042: object specified more than once; extras ignored
+  bpsk.vcxproj -> C:\Users\thaumatichthys\source\repos\bpsk\x64\Debug\bpsk.exe

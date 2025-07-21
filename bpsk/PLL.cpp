@@ -1,6 +1,12 @@
 #include "PLL.hpp"
+#include <iostream>
+#include <algorithm>
+#include "constants.hpp"
+#include <math.h>
+
 
 PFD::PFD() {
+	printf("pfd constructor ran\n");
 }
 
 int PFD::Update(bool reference, bool input) {
@@ -31,14 +37,14 @@ NCO::NCO(float sample_rate) {
 void NCO::SetFreq(float freq) {
 	// freq = sample_rate * tuning_word / 2^32
 	// 2^32 * freq / sample_rate = tuning_word
-
-	tuning_word_ = (uint32_t)((freq / sample_rate_) * 4294967296.0f);
+	frequency_ = freq;
+	UpdateFreq_();
 }
 
 void NCO::ChangeFreq(float increment) {
 	// may be problematic
-	int32_t tuning_word_increment = (int32_t)((increment / sample_rate_) * 4294967296.0f);
-	tuning_word_ += tuning_word_increment;
+	frequency_ += increment;
+	UpdateFreq_();
 }
 
 bool NCO::Update() {
@@ -51,29 +57,70 @@ bool NCO::GetOutput() {
 	return output_;
 }
 
-LoopFilter::LoopFilter(float sample_rate) {
+float NCO::GetFreq() {
+	return frequency_;
+}
+
+float NCO::GetSineValue() {
+	float phase = 2.0f * constants::pi * ((float)phase_accum_ / constants::uint32_t_max);
+	return sinf(phase);
+}
+
+float NCO::GetCosValue() {
+	float phase = 2.0f * constants::pi * ((float)phase_accum_ / constants::uint32_t_max);
+	return cosf(phase);
+}
+
+void NCO::UpdateFreq_() {
+	tuning_word_ = (uint32_t)((frequency_ / sample_rate_) * constants::uint32_t_max);
+}
+
+LoopFilter::LoopFilter(float sample_rate, float max_deviation, float Kp = 1000000.0f, float Ki = 100.0f) {
+	max_deviation_ = max_deviation;
 	sample_rate_ = sample_rate;
+	printf("loop filter constructor ran\n");
+	Ki_ = Ki;
+	Kp_ = Kp;
+	
 }
 
-float LoopFilter::PushValue(float input) { // not implemented yet
-	return input;
+float LoopFilter::PushValue(float input) {
+	float proportional_term_scaled = input * Kp_;
+	float integral_term_scaled = integral_term_ * Ki_;
+
+	float total = proportional_term_scaled + integral_term_scaled;
+
+	if (integral_term_scaled < max_deviation_ && integral_term_scaled > -max_deviation_)
+		integral_term_ += input;
+
+	return total;
 }
 
-PLL::PLL(float sample_rate, float initial_freq, float max_deviation) : nco_(sample_rate), loop_filter_(sample_rate) {
+void LoopFilter::SetKParams(float Kp, float Ki) {
+	Ki_ = Ki;
+	Kp_ = Kp;
+}
+
+PLL::PLL(float sample_rate, float initial_freq, float max_deviation) : nco_(sample_rate), loop_filter_(sample_rate, max_deviation) {
 	sample_rate_ = sample_rate;
 	initial_freq_ = initial_freq;
-	max_deviation_ = max_deviation;
 
 	nco_.SetFreq(initial_freq);
 }
 
 bool PLL::Update(bool ref_in) {
 	bool nco_val = nco_.GetOutput();
-	float pfd_val = (float) pfd_.Update(ref_in, nco_val);
+	float pfd_val = (float) pfd_.Update(ref_in, nco_val) / sample_rate_;
 	float control_signal = loop_filter_.PushValue(pfd_val);
 
-	nco_.SetFreq(control_signal);
+	nco_.SetFreq(control_signal + initial_freq_);
 
 	nco_.Update();
+
+	return nco_.GetOutput();
+}
+
+float PLL::GetNCOFreq() {
+	return nco_.GetFreq();
 }
 

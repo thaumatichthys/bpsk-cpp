@@ -27,12 +27,18 @@
     <ClCompile Include="PLL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SquaringLoop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IIRFilter.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="constants.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SquaringLoop.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
