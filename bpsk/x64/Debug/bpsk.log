@@ -1,4 +1,15 @@
 ﻿  bpsk.cpp
+C:\Users\thaumatichthys\source\repos\bpsk\bpsk\bpsk.cpp(67,21): warning C4305: 'initializing': truncation from 'double' to 'float'
 C:\Users\thaumatichthys\source\repos\bpsk\bpsk\bpsk.cpp(102,17): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  DSSSDemodulator.cpp
+C:\Users\thaumatichthys\source\repos\bpsk\bpsk\DSSSDemodulator.cpp(128,36): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+  IIRFilter.cpp
+  Misc.cpp
+  PeakFinder.cpp
+  PLL.cpp
+  PLL.hpp
+  PRNG.cpp
+  SquaringLoop.cpp
+  Generating Code...
 x64\Debug\PLL.obj : warning LNK4042: object specified more than once; extras ignored
   bpsk.vcxproj -> C:\Users\thaumatichthys\source\repos\bpsk\x64\Debug\bpsk.exe

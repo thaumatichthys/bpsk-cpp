@@ -22,7 +22,7 @@ public:
 		int chip_coeff,
 		int data_bitrate);
 
-	float Update(float sample);
+	std::vector<float> Update(float sample);
 private:
 	RX_STATE receiver_state_ = RX_STATE::RX_STATE_ACQ;
 	SquaringLoop squaring_loop_;

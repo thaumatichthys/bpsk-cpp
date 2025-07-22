@@ -64,7 +64,7 @@ int main()
 	std::string wavfile_path = "C:/Users/thaumatichthys/PycharmProjects/bpsk/output.bin";
 
 	
-	float initial_freq = 5009;
+	float initial_freq = 5000.1;
 	float max_dev = 20;
 	int chip_rate = 64;
 	int seq_len = 41;
@@ -120,14 +120,16 @@ int main()
 
 
 		//float pll_freq = squaring_loop.pll_.GetNCOFreq();
-		float pll_freq = demod.Update(value);
+		auto ret = demod.Update(value);
+		float pll_freq = ret[0];
+		float pll_val = ret[1];
 		if (i % 100 == 0) {
 			//printf("NCO freq: %f\n", pll_freq);
 			//printf("%f\n", filtered_val);
 		}
 
 		pll_freqs.push_back(pll_freq);
-		//pll_out.push_back(pll_val);
+		pll_out.push_back(pll_val);
 		//ref_out.push_back(filtered_val);
 	}
 

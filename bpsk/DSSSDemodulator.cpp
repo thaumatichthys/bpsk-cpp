@@ -34,9 +34,12 @@ DSSSDemodulator::DSSSDemodulator(
 	printf("samples_per_seq = %d\n", samples_per_seq_);
 
 	prng_.AdvancePhaseSamples(1234);
+
+	// disable PLL
+	squaring_loop_.pll_.SetLoopFilterKParams(0, 0);
 }
 
-float DSSSDemodulator::Update(float sample) {
+std::vector<float> DSSSDemodulator::Update(float sample) {
 	float dummy1 = 0;
 	// update everything
 	squaring_loop_.Update(sample);
@@ -62,6 +65,7 @@ float DSSSDemodulator::Update(float sample) {
 	q_integrator_.Accumulate(despread_q * despread_q);
 
 	dummy1 = despread_q;
+	float dummy2 = despread_i;
 
 	if (index_ % samples_per_seq_ == 0) { // run once per PRN sequence
 		
@@ -134,5 +138,5 @@ float DSSSDemodulator::Update(float sample) {
 	prng_.IncrementPhase();
 	// end
 	index_++;
-	return dummy1;
+	return { dummy1, dummy2 };
 }
