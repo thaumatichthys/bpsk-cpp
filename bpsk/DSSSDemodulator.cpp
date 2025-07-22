@@ -32,6 +32,8 @@ DSSSDemodulator::DSSSDemodulator(
 	printf("carrier samplerate = %d\n", carrier_sample_rate_);
 	printf("samples per chip = %d\n", samples_per_chip_);
 	printf("samples_per_seq = %d\n", samples_per_seq_);
+	initial_freq_ = initial_freq;
+
 
 	prng_.AdvancePhaseSamples(1234);
 
@@ -133,7 +135,11 @@ std::vector<float> DSSSDemodulator::Update(float sample) {
 		bool data_bit = (bool)(despread_i > 0.0f);
 	}
 	
+	// costas loop
 
+	float error = despread_i * despread_q;
+
+	squaring_loop_.pll_.nco_.SetFreq(initial_freq_ + error * 10.0f);
 	
 	prng_.IncrementPhase();
 	// end

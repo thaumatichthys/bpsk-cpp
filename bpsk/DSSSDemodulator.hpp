@@ -44,6 +44,7 @@ private:
 
 	int samples_per_chip_;
 	int samples_per_seq_;
+	float initial_freq_;
 	//float chip_cutoff_frac_;
 	int carrier_sample_rate_;
 	uint32_t index_ = 0;

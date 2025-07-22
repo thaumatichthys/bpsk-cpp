@@ -138,7 +138,7 @@ bool PLL::Update(bool ref_in) {
 	float pfd_val = (float) pfd_.Update(ref_divided, nco_val_divided) / sample_rate_;
 	float control_signal = loop_filter_.PushValue(pfd_val);
 
-	nco_.SetFreq(control_signal + initial_freq_);
+	//nco_.SetFreq(control_signal + initial_freq_);
 
 	nco_.Update();
 
