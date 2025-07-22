@@ -1,3 +1,5 @@
+#pragma once
+
 #include "IIRFilter.hpp"
 #include "SquaringLoop.hpp"
 #include "PRNG.hpp"
@@ -25,7 +27,7 @@ public:
 	std::vector<float> Update(float sample);
 private:
 	RX_STATE receiver_state_ = RX_STATE::RX_STATE_ACQ;
-	SquaringLoop squaring_loop_;
+	//SquaringLoop squaring_loop_;
 	PRNG prng_;
 	IIRFilter i_filter_;
 	IIRFilter q_filter_;
@@ -40,6 +42,8 @@ private:
 	Integrator q_early_integrator_;
 	Integrator i_late_integrator_;
 	Integrator q_late_integrator_;
+	NCO downconverter_nco_;
+	PIController costas_loop_filter_;
 
 
 	int samples_per_chip_;

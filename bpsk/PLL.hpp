@@ -33,9 +33,9 @@ private:
 	uint32_t tuning_word_ = 0;
 };
 
-class LoopFilter {
+class PIController {
 public:
-	LoopFilter(float sample_rate, float max_deviation, float Kp, float Ki);
+	PIController(float sample_rate, float max_deviation, float Kp, float Ki);
 	float PushValue(float input);
 	void SetKParams(float Kp, float Ki);
 private:
@@ -82,7 +82,7 @@ public:
 	void SetLoopFilterKParams(float Kp, float Ki);
 	NCO nco_;
 	PFD pfd_;
-	LoopFilter loop_filter_;
+	PIController loop_filter_;
 	FreqDivider fb_divider_;
 	FreqDivider ref_divider_;
 private:

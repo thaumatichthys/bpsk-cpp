@@ -64,8 +64,8 @@ int main()
 	std::string wavfile_path = "C:/Users/thaumatichthys/PycharmProjects/bpsk/output.bin";
 
 	
-	float initial_freq = 5000.1;
-	float max_dev = 20;
+	float initial_freq = 5003;
+	float max_dev = 10;
 	int chip_rate = 64;
 	int seq_len = 41;
 	int oversample_ratio = 16;

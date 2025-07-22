@@ -75,7 +75,7 @@ void NCO::UpdateFreq_() {
 	tuning_word_ = (uint32_t)((frequency_ / sample_rate_) * constants::uint32_t_max);
 }
 
-LoopFilter::LoopFilter(float sample_rate, float max_deviation, float Kp = 1000000.0f, float Ki = 100.0f) {
+PIController::PIController(float sample_rate, float max_deviation, float Kp = 1000000.0f, float Ki = 100.0f) {
 	max_deviation_ = max_deviation;
 	sample_rate_ = sample_rate;
 	printf("loop filter constructor ran\n");
@@ -84,7 +84,7 @@ LoopFilter::LoopFilter(float sample_rate, float max_deviation, float Kp = 100000
 	
 }
 
-float LoopFilter::PushValue(float input) {
+float PIController::PushValue(float input) {
 	float proportional_term_scaled = input * Kp_;
 	float integral_term_scaled = integral_term_ * Ki_;
 
@@ -96,7 +96,7 @@ float LoopFilter::PushValue(float input) {
 	return total;
 }
 
-void LoopFilter::SetKParams(float Kp, float Ki) {
+void PIController::SetKParams(float Kp, float Ki) {
 	Ki_ = Ki;
 	Kp_ = Kp;
 }

@@ -1,19 +1,19 @@
 #include "DSSSDemodulator.hpp"
 
 
-DSSSDemodulator::DSSSDemodulator( 
-	float initial_freq, 
-	float max_deviation, 
+DSSSDemodulator::DSSSDemodulator(
+	float initial_freq,
+	float max_deviation,
 	float peak_finder_min_above_average,
 	int prng_seed,
 	int prng_seq_len,
-	int oversample_ratio, 
-	int chip_coeff, 
-	int data_bitrate) 
-	: 
-	squaring_loop_((float)(chip_coeff*data_bitrate*oversample_ratio), initial_freq, 100),
+	int oversample_ratio,
+	int chip_coeff,
+	int data_bitrate)
+	:
+	//squaring_loop_((float)(chip_coeff*data_bitrate*oversample_ratio), initial_freq, 100),
 	// PRNG(int sample_rate, int seed, int seq_length, int data_bitrate, int chip_coeff)
-	prng_((chip_coeff*data_bitrate*oversample_ratio), prng_seed, prng_seq_len, data_bitrate, chip_coeff),
+	prng_((chip_coeff* data_bitrate* oversample_ratio), prng_seed, prng_seq_len, data_bitrate, chip_coeff),
 	// IIRFilter(FilterMode mode, int order, float sample_rate, float freq)
 	i_filter_(FilterMode::LowPass, 3, (float)(chip_coeff* data_bitrate* oversample_ratio), (float)(data_bitrate)),
 	q_filter_(FilterMode::LowPass, 3, (float)(chip_coeff* data_bitrate* oversample_ratio), (float)(data_bitrate)),
@@ -21,7 +21,9 @@ DSSSDemodulator::DSSSDemodulator(
 	q_early_filter_(FilterMode::LowPass, 3, (float)(chip_coeff* data_bitrate* oversample_ratio), (float)(data_bitrate)),
 	i_late_filter_(FilterMode::LowPass, 3, (float)(chip_coeff* data_bitrate* oversample_ratio), (float)(data_bitrate)),
 	q_late_filter_(FilterMode::LowPass, 3, (float)(chip_coeff* data_bitrate* oversample_ratio), (float)(data_bitrate)),
-	peak_finder_(2 * prng_seq_len, peak_finder_min_above_average) // since every cycle it advances by half a chip
+	peak_finder_(2 * prng_seq_len, peak_finder_min_above_average), // since every cycle it advances by half a chip
+	downconverter_nco_((float)(chip_coeff* data_bitrate* oversample_ratio)),
+	costas_loop_filter_((float)(chip_coeff* data_bitrate* oversample_ratio), max_deviation, 0.0f, 0.0f) // dummy Ki and Kp for now
 {
 
 	// why is it like this ^^^
@@ -36,20 +38,22 @@ DSSSDemodulator::DSSSDemodulator(
 
 
 	prng_.AdvancePhaseSamples(1234);
-
+	downconverter_nco_.SetFreq(initial_freq);
+	costas_loop_filter_.SetKParams(max_deviation * 10.0f, 0.005f);
 	// disable PLL
-	squaring_loop_.pll_.SetLoopFilterKParams(0, 0);
+	//squaring_loop_.pll_.SetLoopFilterKParams(0, 0);
 }
 
 std::vector<float> DSSSDemodulator::Update(float sample) {
 	float dummy1 = 0;
 	// update everything
-	squaring_loop_.Update(sample);
+	//squaring_loop_.Update(sample);
+	downconverter_nco_.Update();
 	// end update everything
 	
 	// downconverter LO
-	float LO_i = squaring_loop_.pll_.nco_.GetCosValue();
-	float LO_q = squaring_loop_.pll_.nco_.GetSineValue();
+	float LO_i = downconverter_nco_.GetCosValue();
+	float LO_q = downconverter_nco_.GetSineValue();
 
 	float downconverted_i = sample * LO_i;
 	float downconverted_q = sample * LO_q;
@@ -139,7 +143,9 @@ std::vector<float> DSSSDemodulator::Update(float sample) {
 
 	float error = despread_i * despread_q;
 
-	squaring_loop_.pll_.nco_.SetFreq(initial_freq_ + error * 10.0f);
+	float control_signal = costas_loop_filter_.PushValue(error);
+
+	downconverter_nco_.SetFreq(initial_freq_ + control_signal);
 	
 	prng_.IncrementPhase();
 	// end
