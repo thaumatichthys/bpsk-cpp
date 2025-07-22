@@ -210,3 +210,13 @@ std::vector<std::vector<float>> IIRFilter::GetButterworthLowpassCoefficients(int
 	return { b_real, a_real }; // numerator, denominator
 }
 
+DCBlock::DCBlock(float alpha) {
+	alpha_ = alpha;
+}
+
+float DCBlock::PushValue(float input) {
+	float y = input - x_prev_ + alpha_ * y_prev_;
+	x_prev_ = input;
+	y_prev_ = y;
+	return y;
+}

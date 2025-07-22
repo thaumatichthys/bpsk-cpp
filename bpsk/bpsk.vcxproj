@@ -132,14 +132,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="bpsk.cpp" />
+    <ClCompile Include="DSSSDemodulator.cpp" />
     <ClCompile Include="IIRFilter.cpp" />
+    <ClCompile Include="Misc.cpp" />
+    <ClCompile Include="PeakFinder.cpp" />
     <ClCompile Include="PLL.cpp" />
     <ClCompile Include="PLL.hpp" />
+    <ClCompile Include="PRNG.cpp" />
     <ClCompile Include="SquaringLoop.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="constants.hpp" />
+    <ClInclude Include="DSSSDemodulator.hpp" />
     <ClInclude Include="IIRFilter.hpp" />
+    <ClInclude Include="Misc.hpp" />
+    <ClInclude Include="PeakFinder.hpp" />
+    <ClInclude Include="PRNG.hpp" />
     <ClInclude Include="SquaringLoop.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

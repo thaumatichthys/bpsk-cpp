@@ -22,8 +22,8 @@ public:
 	bool Update();
 	bool GetOutput();
 	float GetFreq();
-	float Get2xSineValue();
-	float Get2xCosValue();
+	float GetSineValue();
+	float GetCosValue();
 private:
 	void UpdateFreq_();
 	bool output_ = false;
@@ -78,7 +78,8 @@ public:
 	float GetNCOFreq();
 	void SetRefDivider(int denom);
 	void SetFBDivider(int denom);
-	void SetLoopFilterFreq(float initial_freq);
+	void SetLoopFilterCenterFreq(float initial_freq);
+	void SetLoopFilterKParams(float Kp, float Ki);
 	NCO nco_;
 	PFD pfd_;
 	LoopFilter loop_filter_;

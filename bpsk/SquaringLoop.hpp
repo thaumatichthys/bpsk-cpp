@@ -5,10 +5,9 @@
 
 class SquaringLoop {
 public:
-	SquaringLoop(float sample_rate, float initial_freq, float max_deviation, int input_filter_order = 4);
+	SquaringLoop(float sample_rate, float initial_freq, float max_deviation, int input_filter_order = 2);
 	PLL pll_;
-	bool Update(float input);
+	float Update(float input);
 private:
 	IIRFilter iirfilter_;
-
 };

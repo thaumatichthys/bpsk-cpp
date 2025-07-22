@@ -1,5 +1,9 @@
 C:\Users\thaumatichthys\source\repos\bpsk\bpsk\bpsk.cpp;C:\Users\thaumatichthys\source\repos\bpsk\bpsk\x64\Debug\bpsk.obj
+C:\Users\thaumatichthys\source\repos\bpsk\bpsk\DSSSDemodulator.cpp;C:\Users\thaumatichthys\source\repos\bpsk\bpsk\x64\Debug\DSSSDemodulator.obj
 C:\Users\thaumatichthys\source\repos\bpsk\bpsk\IIRFilter.cpp;C:\Users\thaumatichthys\source\repos\bpsk\bpsk\x64\Debug\IIRFilter.obj
+C:\Users\thaumatichthys\source\repos\bpsk\bpsk\Misc.cpp;C:\Users\thaumatichthys\source\repos\bpsk\bpsk\x64\Debug\Misc.obj
+C:\Users\thaumatichthys\source\repos\bpsk\bpsk\PeakFinder.cpp;C:\Users\thaumatichthys\source\repos\bpsk\bpsk\x64\Debug\PeakFinder.obj
 C:\Users\thaumatichthys\source\repos\bpsk\bpsk\PLL.cpp;C:\Users\thaumatichthys\source\repos\bpsk\bpsk\x64\Debug\PLL.obj
 C:\Users\thaumatichthys\source\repos\bpsk\bpsk\PLL.hpp;C:\Users\thaumatichthys\source\repos\bpsk\bpsk\x64\Debug\PLL.obj
+C:\Users\thaumatichthys\source\repos\bpsk\bpsk\PRNG.cpp;C:\Users\thaumatichthys\source\repos\bpsk\bpsk\x64\Debug\PRNG.obj
 C:\Users\thaumatichthys\source\repos\bpsk\bpsk\SquaringLoop.cpp;C:\Users\thaumatichthys\source\repos\bpsk\bpsk\x64\Debug\SquaringLoop.obj

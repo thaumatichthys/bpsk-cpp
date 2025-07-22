@@ -1,3 +1,4 @@
 ﻿  bpsk.cpp
-C:\Users\thaumatichthys\source\repos\bpsk\bpsk\bpsk.cpp(44,17): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\thaumatichthys\source\repos\bpsk\bpsk\bpsk.cpp(102,17): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+x64\Debug\PLL.obj : warning LNK4042: object specified more than once; extras ignored
   bpsk.vcxproj -> C:\Users\thaumatichthys\source\repos\bpsk\x64\Debug\bpsk.exe

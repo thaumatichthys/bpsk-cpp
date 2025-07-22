@@ -61,12 +61,12 @@ float NCO::GetFreq() {
 	return frequency_;
 }
 
-float NCO::Get2xSineValue() {
+float NCO::GetSineValue() {
 	float phase = 2.0f * constants::pi * ((float)phase_accum_ / constants::uint32_t_max);
 	return sinf(phase);
 }
 
-float NCO::Get2xCosValue() {
+float NCO::GetCosValue() {
 	float phase = 2.0f * constants::pi * ((float)phase_accum_ / constants::uint32_t_max);
 	return cosf(phase);
 }
@@ -157,7 +157,11 @@ void PLL::SetFBDivider(int denom) {
 	fb_divider_.SetDenom(denom);
 }
 
-void PLL::SetLoopFilterFreq(float initial_freq) {
+void PLL::SetLoopFilterCenterFreq(float initial_freq) {
 	initial_freq_ = initial_freq;
+}
+
+void PLL::SetLoopFilterKParams(float Kp, float Ki) {
+	loop_filter_.SetKParams(Kp, Ki);
 }
 

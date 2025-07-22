@@ -24,3 +24,13 @@ private:
 	static std::vector<std::vector<float>> GetButterworthBandpassCoefficients(int order, float low_frac, float high_frac);
 	static std::vector<std::vector<float>> GetButterworthLowpassCoefficients(int order, float cutoff);
 };
+
+class DCBlock {
+public:
+	DCBlock(float alpha = 0.995f);
+	float PushValue(float input);
+private:
+	float alpha_;
+	float x_prev_ = 0;
+	float y_prev_ = 0;
+};
