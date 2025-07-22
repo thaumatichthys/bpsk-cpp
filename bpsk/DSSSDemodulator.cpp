@@ -15,13 +15,13 @@ DSSSDemodulator::DSSSDemodulator(
 	// PRNG(int sample_rate, int seed, int seq_length, int data_bitrate, int chip_coeff)
 	prng_((chip_coeff*data_bitrate*oversample_ratio), prng_seed, prng_seq_len, data_bitrate, chip_coeff),
 	// IIRFilter(FilterMode mode, int order, float sample_rate, float freq)
-	i_filter_(FilterMode::LowPass, 2, (float)(chip_coeff* data_bitrate* oversample_ratio), (float)(data_bitrate)),
-	q_filter_(FilterMode::LowPass, 2, (float)(chip_coeff* data_bitrate* oversample_ratio), (float)(data_bitrate)),
-	i_early_filter_(FilterMode::LowPass, 2, (float)(chip_coeff* data_bitrate* oversample_ratio), (float)(data_bitrate)),
-	q_early_filter_(FilterMode::LowPass, 2, (float)(chip_coeff* data_bitrate* oversample_ratio), (float)(data_bitrate)),
-	i_late_filter_(FilterMode::LowPass, 2, (float)(chip_coeff* data_bitrate* oversample_ratio), (float)(data_bitrate)),
-	q_late_filter_(FilterMode::LowPass, 2, (float)(chip_coeff* data_bitrate* oversample_ratio), (float)(data_bitrate)),
-	peak_finder_(prng_seq_len, peak_finder_min_above_average)
+	i_filter_(FilterMode::LowPass, 3, (float)(chip_coeff* data_bitrate* oversample_ratio), (float)(data_bitrate)),
+	q_filter_(FilterMode::LowPass, 3, (float)(chip_coeff* data_bitrate* oversample_ratio), (float)(data_bitrate)),
+	i_early_filter_(FilterMode::LowPass, 3, (float)(chip_coeff* data_bitrate* oversample_ratio), (float)(data_bitrate)),
+	q_early_filter_(FilterMode::LowPass, 3, (float)(chip_coeff* data_bitrate* oversample_ratio), (float)(data_bitrate)),
+	i_late_filter_(FilterMode::LowPass, 3, (float)(chip_coeff* data_bitrate* oversample_ratio), (float)(data_bitrate)),
+	q_late_filter_(FilterMode::LowPass, 3, (float)(chip_coeff* data_bitrate* oversample_ratio), (float)(data_bitrate)),
+	peak_finder_(2 * prng_seq_len, peak_finder_min_above_average) // since every cycle it advances by half a chip
 {
 
 	// why is it like this ^^^
@@ -29,6 +29,11 @@ DSSSDemodulator::DSSSDemodulator(
 	//chip_cutoff_frac_ = (float)data_bitrate / ((float)(chip_coeff * data_bitrate * oversample_ratio)); 
 	samples_per_chip_ = carrier_sample_rate_ / (chip_coeff * data_bitrate);
 	samples_per_seq_ = samples_per_chip_ * prng_seq_len;
+	printf("carrier samplerate = %d\n", carrier_sample_rate_);
+	printf("samples per chip = %d\n", samples_per_chip_);
+	printf("samples_per_seq = %d\n", samples_per_seq_);
+
+	prng_.AdvancePhaseSamples(1234);
 }
 
 float DSSSDemodulator::Update(float sample) {
@@ -56,16 +61,17 @@ float DSSSDemodulator::Update(float sample) {
 	i_integrator_.Accumulate(despread_i * despread_i);
 	q_integrator_.Accumulate(despread_q * despread_q);
 
-	dummy1 = despread_i;
-
+	dummy1 = despread_q;
 
 	if (index_ % samples_per_seq_ == 0) { // run once per PRN sequence
-		float i_integral = i_integrator_.DumpValue();
-		float q_integral = q_integrator_.DumpValue();
-
-		float correlation_energy = i_integral + q_integral;
+		
 
 		if (receiver_state_ == RX_STATE::RX_STATE_ACQ) {
+			float i_integral = i_integrator_.DumpValue();
+			float q_integral = q_integrator_.DumpValue();
+
+			float correlation_energy = i_integral + q_integral;
+
 			printf("Correlation Energy: %f\n", correlation_energy);
 
 			if (peak_finder_.PushValue(correlation_energy)) {
@@ -93,7 +99,12 @@ float DSSSDemodulator::Update(float sample) {
 		i_late_integrator_.Accumulate(i_late_despread * i_late_despread);
 		q_late_integrator_.Accumulate(q_late_despread * q_late_despread);
 
-		if (index_ % samples_per_seq_ == 0) {
+		if (index_ % (samples_per_seq_) == 0) {
+			float i_integral = i_integrator_.DumpValue();
+			float q_integral = q_integrator_.DumpValue();
+
+			float correlation_energy = i_integral + q_integral;
+
 			float i_early_integral = i_early_integrator_.DumpValue();
 			float q_early_integral = q_early_integrator_.DumpValue();
 			float i_late_integral = i_late_integrator_.DumpValue();
@@ -104,7 +115,7 @@ float DSSSDemodulator::Update(float sample) {
 
 			float alignment_error = correlation_energy_late - correlation_energy_early;
 
-			float error_output = alignment_error * -10.0f;
+			float error_output = alignment_error * -0.05f;
 			
 			// limit error to two samples 
 			const float error_max = 1.0f;
@@ -112,7 +123,7 @@ float DSSSDemodulator::Update(float sample) {
 				error_output = error_output * error_max / abs(error_output);
 			prng_.AdvancePhaseSamples(roundf(error_output));
 			
-			printf("Alignment error: %f\n", alignment_error);
+			printf("Alignment error: %f. Correlation: %f\n", alignment_error, correlation_energy);
 		}
 
 		bool data_bit = (bool)(despread_i > 0.0f);

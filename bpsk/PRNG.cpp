@@ -14,22 +14,22 @@ PRNG::PRNG(int sample_rate, int seed, int seq_length, int data_bitrate, int chip
 	samples_per_seq_ = samples_per_chip_ * seq_length;
 	
 	// generate PRN sequence
+
+	printf("samples per chip: %d\n", samples_per_chip_);
 	
-	std::vector<bool> dummy_seq = { 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0
-	};
+	std::vector<bool> dummy_seq = { 0,1,1,1,0,1,1,0,1,1,0,0,1,0,0,1,0,1,0,0,0,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,1,0,0,1,0,1,1,1,0,1,0,0,1,0,1,0,1,1,0,1,1,1,1,0,1,1,1,1,1,0,0,1,1,0,0,0,1,1,1,1,0,0,1,0,1,0,1,0,0,1,1,1,1,0,1,1,0,0,1,0,0,0,0,1,1,1,1,0,1,0,0,1,0,0,1,0,1,1,1,0,0,0,0,0,0,0,0,1,0,1,0,1,1,0,0,0,0,0,1,1,1,1,0,0,1,0,1,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,1,1,0,0,0,1,1,1,1,0,0,0,1,1,0,0,1,0,0,1,1,0,0,0,1,0,0,1,0,1,1,1,1,0,1,0,1,1,1,0,1,1,0,0,1,1,1,1,1,1,1,0,0,0,1,0,0,1,0,1,1,1,0,1,0,0,1,1,1,1,1,1,1,1,0,1,0,1,1,1,0,1,1,0,0,1,0,1,0,1,0,0,1,1,0,0,1 };
 
 
+	const int mst_bits = 32;
+	std::mt19937 mt_engine(seed);
 
-
-	std::mt19937_64 mt_engine(seed);
-
-	int n_runs = seq_length / 64 + 1;
+	int n_runs = seq_length / mst_bits + 1;
 	for (int j = 0; j < n_runs; j++) {
-		uint64_t prn = mt_engine();
-		for (int i = 0; (i < 64) && (i + j * 64) < seq_length; i++) {
-			bool bit = (bool)(((uint64_t)1 << i) & prn);
+		uint32_t prn = mt_engine();
+		for (int i = 0; (i < mst_bits) && (i + j * mst_bits) < seq_length; i++) {
+			bool bit = (bool)(((uint32_t)1 << i) & prn);
 			//prn_sequence_.push_back(bit);
-			prn_sequence_.push_back(dummy_seq[i + j * 64]);
+			prn_sequence_.push_back(dummy_seq[i + j * mst_bits]);
 		}
 	}
 	//prn_sequence_.push_back(0);
