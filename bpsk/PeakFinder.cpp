@@ -12,6 +12,7 @@ PeakFinder::PeakFinder(int seq_len, float min_above_average) {
 	buffer_.assign(seq_len, 0.0f);
 	write_ptr_ = 0;
 	current_addr_ = 0;
+	output_ = -1;
 }
 
 bool PeakFinder::PushValue(float value) {

@@ -14,8 +14,6 @@ PRNG::PRNG(int sample_rate, int seed, int seq_length, int data_bitrate, int chip
 	samples_per_seq_ = samples_per_chip_ * seq_length;
 	
 	// generate PRN sequence
-
-	printf("samples per chip: %d\n", samples_per_chip_);
 	
 	std::vector<bool> dummy_seq = { 0,1,1,1,0,1,1,0,1,1,0,0,1,0,0,1,0,1,0,0,0,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,1,0,0,1,0,1,1,1,0,1,0,0,1,0,1,0,1,1,0,1,1,1,1,0,1,1,1,1,1,0,0,1,1,0,0,0,1,1,1,1,0,0,1,0,1,0,1,0,0,1,1,1,1,0,1,1,0,0,1,0,0,0,0,1,1,1,1,0,1,0,0,1,0,0,1,0,1,1,1,0,0,0,0,0,0,0,0,1,0,1,0,1,1,0,0,0,0,0,1,1,1,1,0,0,1,0,1,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,1,1,0,0,0,1,1,1,1,0,0,0,1,1,0,0,1,0,0,1,1,0,0,0,1,0,0,1,0,1,1,1,1,0,1,0,1,1,1,0,1,1,0,0,1,1,1,1,1,1,1,0,0,0,1,0,0,1,0,1,1,1,0,1,0,0,1,1,1,1,1,1,1,1,0,1,0,1,1,1,0,1,1,0,0,1,0,1,0,1,0,0,1,1,0,0,1 };
 
@@ -32,7 +30,6 @@ PRNG::PRNG(int sample_rate, int seed, int seq_length, int data_bitrate, int chip
 			prn_sequence_.push_back(dummy_seq[i + j * mst_bits]);
 		}
 	}
-	//prn_sequence_.push_back(0);
 }
 
 bool PRNG::GetSample() {

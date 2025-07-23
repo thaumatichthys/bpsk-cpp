@@ -121,34 +121,10 @@ int main()
 	int seq_len = 41;
 	int oversample_ratio = 16;
 	int data_bitrate = 50;
-	//float sample_rate = chip_rate * data_bitrate * oversample_ratio;
 
-	/*
-	DSSSDemodulator(
-		float initial_freq,
-		float max_deviation,
-		float peak_finder_min_above_average,
-		int prng_seed,
-		int prng_seq_len,
-		int oversample_ratio,
-		int chip_coeff,
-		int data_bitrate);
-	*/
 
 	DSSSDemodulator demod(initial_freq, max_dev, 3.0f, 1, seq_len, oversample_ratio, chip_rate, data_bitrate, oversample_ratio);
 
-	//SquaringLoop squaring_loop(sample_rate, initial_freq, max_dev);
-
-	//PLL pll(sample_rate, initial_freq, max_dev);
-	//pll.SetRefDivider(1);
-	//pll.SetFBDivider(1);
-
-	float actual_freq = 1090;
-
-	//NCO ref(sample_rate);
-	//ref.ChangeFreq(actual_freq);
-
-	//int num_cycles = sample_rate * 10;
 	auto wavfile_data = load_float_array(wavfile_path);
 	int num_cycles = wavfile_data.size();
 
@@ -157,34 +133,20 @@ int main()
 	std::vector<float> pll_out;
 	std::vector<float> ref_out;
 
-	std::cout << "float size: " << wavfile_data.size();
+	std::vector<bool> output;
 
 
 	for (int i = 0; i < num_cycles; i++) {
 		float value = wavfile_data[i];
-		//float filtered_val = squaring_loop.Update(value);
-		//bool ref_val = ref.Update();
-		//printf("%d\n", ref_val);
 
-		//bool pll_val = pll.Update(ref_val);
-		
+		int ret = demod.Update(value);
 
-
-		//float pll_freq = squaring_loop.pll_.GetNCOFreq();
-		auto ret = demod.Update(value);
-		float pll_freq = ret[0];
-		float pll_val = ret[1];
-		if (i % 100 == 0) {
-			//printf("NCO freq: %f\n", pll_freq);
-			//printf("%f\n", filtered_val);
+		if (ret > -1) {
+			output.push_back(ret);
 		}
-
-		pll_freqs.push_back(pll_freq);
-		pll_out.push_back(pll_val);
-		//ref_out.push_back(filtered_val);
 	}
 
-
+	findBestAsciiDecode(output);
 	
 
 	write_vector_to_file(pll_freqs, output_path);
@@ -193,16 +155,4 @@ int main()
 	
 	return 0;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
-
 

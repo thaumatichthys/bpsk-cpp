@@ -26,7 +26,7 @@ public:
 		int data_bitrate,
 		int clock_recovery_oversample_ratio);
 
-	std::vector<float> Update(float sample);
+	int Update(float sample);
 private:
 	RX_STATE receiver_state_ = RX_STATE::RX_STATE_ACQ;
 	PRNG prng_;
