@@ -132,6 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="bpsk.cpp" />
+    <ClCompile Include="DataClockRecovery.cpp" />
     <ClCompile Include="DSSSDemodulator.cpp" />
     <ClCompile Include="IIRFilter.cpp" />
     <ClCompile Include="Misc.cpp" />
@@ -143,6 +144,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="constants.hpp" />
+    <ClInclude Include="DataClockRecovery.hpp" />
     <ClInclude Include="DSSSDemodulator.hpp" />
     <ClInclude Include="IIRFilter.hpp" />
     <ClInclude Include="Misc.hpp" />

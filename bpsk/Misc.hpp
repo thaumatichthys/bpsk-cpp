@@ -10,3 +10,11 @@ public:
 private:
 	float accumulator_ = 0;
 };
+
+class Derivator {
+public:
+	Derivator();
+	int PushValue(bool input);
+private:
+	int prev_;
+};

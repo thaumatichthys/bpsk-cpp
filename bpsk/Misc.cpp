@@ -17,3 +17,13 @@ float Integrator::DumpValue() {
 float Integrator::GetValue() {
 	return accumulator_;
 }
+
+Derivator::Derivator() {
+	prev_ = 0;
+}
+
+int Derivator::PushValue(bool input) {
+	int out = (int)input - prev_;
+	prev_ = (int)input;
+	return out;
+}

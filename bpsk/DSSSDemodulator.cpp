@@ -140,12 +140,10 @@ std::vector<float> DSSSDemodulator::Update(float sample) {
 	}
 	
 	// costas loop
-
 	float error = despread_i * despread_q;
-
 	float control_signal = costas_loop_filter_.PushValue(error);
-
 	downconverter_nco_.SetFreq(initial_freq_ + control_signal);
+	// end costas loop
 	
 	prng_.IncrementPhase();
 	// end
