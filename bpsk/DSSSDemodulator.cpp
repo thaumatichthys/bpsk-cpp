@@ -37,7 +37,7 @@ DSSSDemodulator::DSSSDemodulator(
 	oversample_ratio_ = oversample_ratio;
 	chip_coeff_ = chip_coeff;
 
-	prng_.AdvancePhaseSamples(1234);
+	//prng_.AdvancePhaseSamples(1234);
 	downconverter_nco_.SetFreq(initial_freq);
 	costas_loop_filter_.SetKParams(max_deviation * 10.0f, 0.005f);
 

@@ -15,9 +15,6 @@
 #include "DSSSDemodulator.hpp"
 
 
-#define PI 3.14159265358979323846
-
-
 void write_vector_to_file(const std::vector<float>& vec, const std::string& path) {
 	std::ofstream file(path);
 	if (!file) {
@@ -115,15 +112,15 @@ int main()
 	std::string wavfile_path = "C:/Users/thaumatichthys/PycharmProjects/bpsk/output.bin";
 
 	
-	float initial_freq = 5005;
+	float initial_freq = 8005;
 	float max_dev = 10;
-	int chip_rate = 64;
+	int chip_rate = 150;
 	int seq_len = 41;
-	int oversample_ratio = 16;
-	int data_bitrate = 50;
+	int oversample_ratio = 8;
+	int data_bitrate = 30;
 
 
-	DSSSDemodulator demod(initial_freq, max_dev, 3.0f, 1, seq_len, oversample_ratio, chip_rate, data_bitrate, oversample_ratio);
+	DSSSDemodulator demod(initial_freq, max_dev, 6.0f, 1, seq_len, oversample_ratio, chip_rate, data_bitrate, oversample_ratio);
 
 	auto wavfile_data = load_float_array(wavfile_path);
 	int num_cycles = wavfile_data.size();
@@ -149,9 +146,9 @@ int main()
 	findBestAsciiDecode(output);
 	
 
-	write_vector_to_file(pll_freqs, output_path);
-	write_vector_to_file(pll_out, output_path1);
-	write_vector_to_file(ref_out, output_path2);
+	//write_vector_to_file(pll_freqs, output_path);
+	//write_vector_to_file(pll_out, output_path1);
+	//write_vector_to_file(ref_out, output_path2);
 	
 	return 0;
 }
