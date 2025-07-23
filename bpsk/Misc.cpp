@@ -20,10 +20,17 @@ float Integrator::GetValue() {
 
 Derivator::Derivator() {
 	prev_ = 0;
+	float_prev_ = 0;
 }
 
 int Derivator::PushValue(bool input) {
 	int out = (int)input - prev_;
 	prev_ = (int)input;
+	return out;
+}
+
+float Derivator::PushValue(float input) {
+	float out = input - float_prev_;
+	float_prev_ = input;
 	return out;
 }

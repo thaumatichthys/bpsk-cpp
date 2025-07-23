@@ -1,4 +1,6 @@
 #include "PeakFinder.hpp"
+#include "constants.hpp"
+
 
 PeakFinder::PeakFinder(int seq_len, float min_above_average) {
 	seq_len_ = seq_len;
@@ -33,7 +35,7 @@ bool PeakFinder::PushValue(float value) {
 		average /= seq_len_;
 		
 		if (max_val_ > average * min_above_average_) {
-			printf("peakfindered, peak %f, average = %f\n", max_val_, average);
+			if (parameters::PRINT_STUFF) printf("Found peak, peak = %f, average = %f\n", max_val_, average);
 			// get delta
 			int delta = (max_index_ - write_ptr_) % seq_len_;
 
@@ -44,7 +46,7 @@ bool PeakFinder::PushValue(float value) {
 			output_ = delta;
 			return true;
 		}
-		printf("did not find a peak\n");
+		if (parameters::PRINT_STUFF) printf("Did not find a peak\n");
 		max_val_ = 0;
 		max_index_ = -1;
 		current_addr_ = 0;

@@ -6,6 +6,8 @@
 #include <complex>
 #include <vector>
 #include <fstream>
+#include <string>
+#include <algorithm>
 
 #include "IIRFilter.hpp"
 #include "PLL.hpp"
@@ -55,6 +57,55 @@ std::vector<float> load_float_array(const std::string& filename) {
 	return data;
 }
 
+// Converts bits to bytes starting from a given offset
+std::string bitsToAscii(const std::vector<bool>& bits, int offset, bool invert) {
+	std::string result;
+	for (size_t i = offset; i + 7 < bits.size(); i += 8) {
+		uint8_t byte = 0;
+		for (int b = 0; b < 8; ++b) {
+			bool bit = bits[i + b];
+			if (invert) bit = !bit;
+			byte = (byte << 1) | bit;
+		}
+		result += static_cast<char>(byte);
+	}
+	return result;
+}
+
+// Counts how many chars are printable ASCII (32 to 126)
+int countPrintable(const std::string& s) {
+	return std::count_if(s.begin(), s.end(), [](char c) {
+		return c >= 32 && c <= 126;
+		});
+}
+
+// Main function: finds best offset and inversion to maximize ASCII chars
+void findBestAsciiDecode(const std::vector<bool>& bitstream) {
+	int bestScore = -1;
+	std::string bestString;
+	int bestOffset = 0;
+	bool bestInverted = false;
+
+	for (int offset = 0; offset < 8; ++offset) {
+		for (bool invert : {false, true}) {
+			std::string decoded = bitsToAscii(bitstream, offset, invert);
+			int score = countPrintable(decoded);
+
+			if (score > bestScore) {
+				bestScore = score;
+				bestString = decoded;
+				bestOffset = offset;
+				bestInverted = invert;
+			}
+		}
+	}
+
+	std::cout << "Best offset: " << bestOffset << "\n";
+	std::cout << "Inverted: " << (bestInverted ? "yes" : "no") << "\n";
+	std::cout << "Printable chars: " << bestScore << "\n";
+	std::cout << "Decoded:\n" << bestString << "\n";
+}
+
 int main()
 {
 	std::string output_path = "C:/Users/thaumatichthys/PycharmProjects/bpsk/data.txt"; // or absolute path like "/tmp/data.txt"
@@ -64,7 +115,7 @@ int main()
 	std::string wavfile_path = "C:/Users/thaumatichthys/PycharmProjects/bpsk/output.bin";
 
 	
-	float initial_freq = 5003;
+	float initial_freq = 5005;
 	float max_dev = 10;
 	int chip_rate = 64;
 	int seq_len = 41;
@@ -84,7 +135,7 @@ int main()
 		int data_bitrate);
 	*/
 
-	DSSSDemodulator demod(initial_freq, max_dev, 3.0f, 1, seq_len, oversample_ratio, chip_rate, data_bitrate);
+	DSSSDemodulator demod(initial_freq, max_dev, 3.0f, 1, seq_len, oversample_ratio, chip_rate, data_bitrate, oversample_ratio);
 
 	//SquaringLoop squaring_loop(sample_rate, initial_freq, max_dev);
 

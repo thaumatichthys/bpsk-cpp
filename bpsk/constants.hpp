@@ -7,6 +7,7 @@ namespace constants {
 }
 
 namespace parameters {
+	constexpr bool PRINT_STUFF = false;
 	constexpr float RX_CENTER_FREQ = 6000;
 	constexpr float RX_MAX_DEVIATION = 50;
 	constexpr int SQUARING_LOOP_FILTER_ORDER = 4;

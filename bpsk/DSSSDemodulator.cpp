@@ -1,4 +1,5 @@
 #include "DSSSDemodulator.hpp"
+#include "constants.hpp"
 
 
 DSSSDemodulator::DSSSDemodulator(
@@ -9,12 +10,11 @@ DSSSDemodulator::DSSSDemodulator(
 	int prng_seq_len,
 	int oversample_ratio,
 	int chip_coeff,
-	int data_bitrate)
+	int data_bitrate,
+	int clock_recovery_oversample_ratio // just set this equal to oversample ratio. this is the number of clock recovery PLL updates in each data bit. must be integer fraction of (oversample_ratio * chip_rate). 
+)
 	:
-	//squaring_loop_((float)(chip_coeff*data_bitrate*oversample_ratio), initial_freq, 100),
-	// PRNG(int sample_rate, int seed, int seq_length, int data_bitrate, int chip_coeff)
 	prng_((chip_coeff* data_bitrate* oversample_ratio), prng_seed, prng_seq_len, data_bitrate, chip_coeff),
-	// IIRFilter(FilterMode mode, int order, float sample_rate, float freq)
 	i_filter_(FilterMode::LowPass, 3, (float)(chip_coeff* data_bitrate* oversample_ratio), (float)(data_bitrate)),
 	q_filter_(FilterMode::LowPass, 3, (float)(chip_coeff* data_bitrate* oversample_ratio), (float)(data_bitrate)),
 	i_early_filter_(FilterMode::LowPass, 3, (float)(chip_coeff* data_bitrate* oversample_ratio), (float)(data_bitrate)),
@@ -23,25 +23,25 @@ DSSSDemodulator::DSSSDemodulator(
 	q_late_filter_(FilterMode::LowPass, 3, (float)(chip_coeff* data_bitrate* oversample_ratio), (float)(data_bitrate)),
 	peak_finder_(2 * prng_seq_len, peak_finder_min_above_average), // since every cycle it advances by half a chip
 	downconverter_nco_((float)(chip_coeff* data_bitrate* oversample_ratio)),
-	costas_loop_filter_((float)(chip_coeff* data_bitrate* oversample_ratio), max_deviation, 0.0f, 0.0f) // dummy Ki and Kp for now
+	costas_loop_filter_((float)(chip_coeff* data_bitrate* oversample_ratio), max_deviation, 0.0f, 0.0f), // dummy Ki and Kp for now
+	clock_recovery_((float)(data_bitrate* clock_recovery_oversample_ratio), data_bitrate + 1, max_deviation / 4.0f) // the 4.0f is a magic number.
 {
 
 	// why is it like this ^^^
 	carrier_sample_rate_ = chip_coeff * data_bitrate * oversample_ratio;
-	//chip_cutoff_frac_ = (float)data_bitrate / ((float)(chip_coeff * data_bitrate * oversample_ratio)); 
 	samples_per_chip_ = carrier_sample_rate_ / (chip_coeff * data_bitrate);
 	samples_per_seq_ = samples_per_chip_ * prng_seq_len;
 	printf("carrier samplerate = %d\n", carrier_sample_rate_);
 	printf("samples per chip = %d\n", samples_per_chip_);
 	printf("samples_per_seq = %d\n", samples_per_seq_);
 	initial_freq_ = initial_freq;
-
+	clock_recovery_oversample_ratio_ = clock_recovery_oversample_ratio;
+	oversample_ratio_ = oversample_ratio;
+	chip_coeff_ = chip_coeff;
 
 	prng_.AdvancePhaseSamples(1234);
 	downconverter_nco_.SetFreq(initial_freq);
 	costas_loop_filter_.SetKParams(max_deviation * 10.0f, 0.005f);
-	// disable PLL
-	//squaring_loop_.pll_.SetLoopFilterKParams(0, 0);
 }
 
 std::vector<float> DSSSDemodulator::Update(float sample) {
@@ -70,8 +70,10 @@ std::vector<float> DSSSDemodulator::Update(float sample) {
 	i_integrator_.Accumulate(despread_i * despread_i);
 	q_integrator_.Accumulate(despread_q * despread_q);
 
+	float demodulated = despread_q; // not too sure why its Q and not I, but whatever i guess
+
 	dummy1 = despread_q;
-	float dummy2 = despread_i;
+	//float dummy2 = 0;// = despread_i;
 
 	if (index_ % samples_per_seq_ == 0) { // run once per PRN sequence
 		
@@ -82,7 +84,7 @@ std::vector<float> DSSSDemodulator::Update(float sample) {
 
 			float correlation_energy = i_integral + q_integral;
 
-			printf("Correlation Energy: %f\n", correlation_energy);
+			if (parameters::PRINT_STUFF) printf("Correlation Energy: %f\n", correlation_energy);
 
 			if (peak_finder_.PushValue(correlation_energy)) {
 				// alignment found, now scroll back to it
@@ -133,10 +135,18 @@ std::vector<float> DSSSDemodulator::Update(float sample) {
 				error_output = error_output * error_max / abs(error_output);
 			prng_.AdvancePhaseSamples(roundf(error_output));
 			
-			printf("Alignment error: %f. Correlation: %f\n", alignment_error, correlation_energy);
+			if (parameters::PRINT_STUFF) printf("Alignment error: %f. Correlation: %f\n", alignment_error, correlation_energy);
 		}
 
-		bool data_bit = (bool)(despread_i > 0.0f);
+		if (index_ % (chip_coeff_ * oversample_ratio_ / clock_recovery_oversample_ratio_) == 0) {
+			bool clock_pulse = clock_recovery_.Update(demodulated);
+			dummy2 = clock_pulse;
+
+			if (clock_pulse) {
+				bool data = (bool)(demodulated > 0.0f);
+				printf("DECODED: %d\n", data);
+			}
+		}
 	}
 	
 	// costas loop
@@ -148,5 +158,5 @@ std::vector<float> DSSSDemodulator::Update(float sample) {
 	prng_.IncrementPhase();
 	// end
 	index_++;
-	return { dummy1, dummy2 };
+	return { (float)((bool)(dummy1>0.0f)), dummy2 };
 }

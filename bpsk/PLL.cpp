@@ -6,7 +6,6 @@
 
 
 PFD::PFD() {
-	printf("pfd constructor ran\n");
 }
 
 int PFD::Update(bool reference, bool input) {
@@ -78,7 +77,6 @@ void NCO::UpdateFreq_() {
 PIController::PIController(float sample_rate, float max_deviation, float Kp = 1000000.0f, float Ki = 100.0f) {
 	max_deviation_ = max_deviation;
 	sample_rate_ = sample_rate;
-	printf("loop filter constructor ran\n");
 	Ki_ = Ki;
 	Kp_ = Kp;
 	
@@ -138,7 +136,7 @@ bool PLL::Update(bool ref_in) {
 	float pfd_val = (float) pfd_.Update(ref_divided, nco_val_divided) / sample_rate_;
 	float control_signal = loop_filter_.PushValue(pfd_val);
 
-	//nco_.SetFreq(control_signal + initial_freq_);
+	nco_.SetFreq(control_signal + initial_freq_);
 
 	nco_.Update();
 

@@ -1,10 +1,11 @@
 #pragma once
 
 #include "IIRFilter.hpp"
-#include "SquaringLoop.hpp"
 #include "PRNG.hpp"
 #include "Misc.hpp"
 #include "PeakFinder.hpp"
+#include "DataClockRecovery.hpp"
+#include "PLL.hpp"
 
 
 enum class RX_STATE {
@@ -22,12 +23,12 @@ public:
 		int prng_seq_len,
 		int oversample_ratio,
 		int chip_coeff,
-		int data_bitrate);
+		int data_bitrate,
+		int clock_recovery_oversample_ratio);
 
 	std::vector<float> Update(float sample);
 private:
 	RX_STATE receiver_state_ = RX_STATE::RX_STATE_ACQ;
-	//SquaringLoop squaring_loop_;
 	PRNG prng_;
 	IIRFilter i_filter_;
 	IIRFilter q_filter_;
@@ -44,12 +45,17 @@ private:
 	Integrator q_late_integrator_;
 	NCO downconverter_nco_;
 	PIController costas_loop_filter_;
+	DataClockRecovery clock_recovery_;
 
 
 	int samples_per_chip_;
 	int samples_per_seq_;
 	float initial_freq_;
-	//float chip_cutoff_frac_;
 	int carrier_sample_rate_;
+	int clock_recovery_oversample_ratio_;
+	int chip_coeff_;
+	int oversample_ratio_;
 	uint32_t index_ = 0;
+
+	float dummy2;
 };

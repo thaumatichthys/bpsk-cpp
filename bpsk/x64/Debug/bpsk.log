@@ -1,9 +1,9 @@
 ﻿  bpsk.cpp
-C:\Users\thaumatichthys\source\repos\bpsk\bpsk\bpsk.cpp(102,17): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-  DataClockRecovery.cpp
+C:\Users\thaumatichthys\source\repos\bpsk\bpsk\bpsk.cpp(68,25): warning C4805: '|': unsafe mix of type 'int' and type 'bool' in operation
+C:\Users\thaumatichthys\source\repos\bpsk\bpsk\bpsk.cpp(77,22): warning C4244: 'return': conversion from '__int64' to 'int', possible loss of data
+C:\Users\thaumatichthys\source\repos\bpsk\bpsk\bpsk.cpp(153,17): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
   DSSSDemodulator.cpp
-C:\Users\thaumatichthys\source\repos\bpsk\bpsk\DSSSDemodulator.cpp(134,36): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-  Misc.cpp
+C:\Users\thaumatichthys\source\repos\bpsk\bpsk\DSSSDemodulator.cpp(27,87): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\thaumatichthys\source\repos\bpsk\bpsk\DSSSDemodulator.cpp(136,36): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
   Generating Code...
-x64\Debug\PLL.obj : warning LNK4042: object specified more than once; extras ignored
   bpsk.vcxproj -> C:\Users\thaumatichthys\source\repos\bpsk\x64\Debug\bpsk.exe

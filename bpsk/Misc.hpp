@@ -15,6 +15,8 @@ class Derivator {
 public:
 	Derivator();
 	int PushValue(bool input);
+	float PushValue(float input);
 private:
 	int prev_;
+	float float_prev_;
 };
